@@ -1,4 +1,5 @@
 import json
+from os import getenv
 import requests
 
 # {
@@ -19,6 +20,16 @@ import requests
 #       }
 #    ]
 # }
+HEADERS = {
+        # 'Authentication': f'Basic {tok}', 
+        'Content-Type': 'application/json'
+        }
+
+
+def get_page(url, tok, id):
+    auth=('admin', 'admin')
+    resp = requests.get(url=f'{url}/{id}', headers=HEADERS, allow_redirects=True, auth=auth)
+    return resp
 
 
 def create_page(url, tok, ctype, key , parent, title , body):
@@ -41,12 +52,34 @@ def create_page(url, tok, ctype, key , parent, title , body):
         ]
     }
     json_payload = json.dumps(payload)
-    HEADERS = {
-        # 'Authentication': f'Basic {tok}', 
-        'Content-Type': 'application/json'
-        }
+    
     print(json_payload)
-    auth=('admin', 'admin')
+    auth=(getenv("ATLAS_LOCAL_USER"), getenv("ATLAS_LOCAL_PASS"))
     resp = requests.post(url=url, headers=HEADERS, data=json_payload, allow_redirects=True, auth=auth)
     return resp
 
+
+def get_space(url, token, key):
+    auth=(getenv("ATLAS_LOCAL_USER"), getenv("ATLAS_LOCAL_PASS"))
+    resp = requests.get(url=f'{url}/rest/api/space/{key}', headers=HEADERS, allow_redirects=True, auth=auth)
+    return resp
+
+
+def create_space(url, token, key, title, description):
+    payload = {
+        "key": key,
+        "name":title,
+        "description": {
+            "plain": {
+                "value": description,
+                "representation": "plain"
+            }
+        },
+        # "metadata": {}
+        
+    }
+    json_payload = json.dumps(payload)
+    print(json_payload)
+    auth=(getenv("ATLAS_LOCAL_USER"), getenv("ATLAS_LOCAL_PASS"))
+    resp = requests.post(url=f'{url}/rest/api/space', headers=HEADERS, data=json_payload, allow_redirects=True, auth=auth)
+    return resp
