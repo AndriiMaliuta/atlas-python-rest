@@ -1,10 +1,6 @@
-import base64
 from datetime import datetime
 from os import getenv
-from time import time
-import requests
-import services
-
+from confl import services
 
 if __name__ == '__main__':
     start = datetime.now()
